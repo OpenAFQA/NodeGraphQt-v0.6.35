@@ -23,7 +23,8 @@ class _PropVector(BaseProperty):
             self._add_item(i)
 
     def _add_item(self, index):
-        _ledit = _NumberValueEdit()
+        # now vectors can only be used for ints
+        _ledit = _NumberValueEdit(data_type=int)
         _ledit.index = index
         _ledit.value_changed.connect(
             lambda: self._on_value_change(_ledit.get_value(), _ledit.index)

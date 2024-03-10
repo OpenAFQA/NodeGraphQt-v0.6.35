@@ -73,15 +73,18 @@ class _NumberValueMenu(QtWidgets.QMenu):
         elif data_type is float:
             self.set_steps(self.steps)
 
-
+# Added set_name(), get_name() and self.name, value_changed
+# fixing _on_mmb_mouse_move() and _on_editing_finished()
 class _NumberValueEdit(QtWidgets.QLineEdit):
 
-    value_changed = QtCore.Signal(object)
+    # value_changed = QtCore.Signal(object)
+    value_changed = QtCore.Signal(str, object)
 
     def __init__(self, parent=None, data_type=float):
         super(_NumberValueEdit, self).__init__(parent)
         self.setToolTip('"MMB + Drag Left/Right" to change values.')
         self.setText('0')
+        self._name = None
 
         self._MMB_STATE = False
         self._previous_x = None
@@ -146,7 +149,8 @@ class _NumberValueEdit(QtWidgets.QLineEdit):
         self._previous_x = None
 
     def _on_mmb_mouse_move(self):
-        self.value_changed.emit(self.get_value())
+        # self.value_changed.emit(self.get_value())
+        self.value_changed.emit(self.get_name(), self.get_value())
 
     def _on_editing_finished(self):
         if self._data_type is float:
@@ -157,7 +161,8 @@ class _NumberValueEdit(QtWidgets.QLineEdit):
                     val1 = val1 or '0'
                     val2 = val2 or '0'
                     self.setText(val1 + point + val2)
-        self.value_changed.emit(self.get_value())
+        # self.value_changed.emit(self.get_value())
+        self.value_changed.emit(self.get_name(), self.get_value())
 
     def _convert_text(self, text):
         """
@@ -273,6 +278,20 @@ class _NumberValueEdit(QtWidgets.QLineEdit):
             if point and point not in text:
                 text = text.replace('.', point)
         self.setText(text)
+
+    def get_name(self):
+        """
+        Returns:
+            str: property name matching the node property.
+        """
+        return self._name
+
+    def set_name(self, name):
+        """
+        Args:
+            name (str): property name matching the node property.
+        """
+        self._name = name
 
 
 class IntValueEdit(_NumberValueEdit):
